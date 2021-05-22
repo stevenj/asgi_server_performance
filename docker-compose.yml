@@ -1,0 +1,23 @@
+version: "3.4"
+
+services:
+  asgi_test:
+    image: asgi_test:latest
+    container_name: asgi_test
+    ports:
+      - "7000-7999:7000-7999"
+
+  locust-master:
+    image: locustio/locust
+    volumes:
+      - ./scripts:/scripts
+    ports:
+      - "8089:8089"
+    command: -f /scripts/locustfile.py --master -H http://asgi_test:7001
+
+
+  locust-worker:
+    image: locustio/locust
+    volumes:
+      - ./scripts:/scripts
+    command: -f /scripts/locustfile.py --worker --master-host locust-master
